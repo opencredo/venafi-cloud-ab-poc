@@ -10,6 +10,8 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: ./google.json
     defaults:
       run:
         working-directory: terraform/envs/dev
@@ -19,6 +21,12 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
+    
+    - name: Get Google Secret
+      run: 'echo "$GCP_SERVICE_ACCOUNT" > google.json'
+      shell: bash
+      env:
+        GCP_SERVICE_ACCOUNT: ${{secrets.GCP_SERVICE_ACCOUNT}}
 
     - name: Terraform Init
       run: terraform init
