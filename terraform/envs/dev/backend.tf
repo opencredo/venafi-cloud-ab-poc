@@ -1,7 +1,7 @@
 terraform {
   backend "gcs" {
-    bucket  = "ocvab-tf-state"
-    prefix  = "terraform/state"
+    bucket = "ocvab-tf-state"
+    prefix = "terraform/state"
   }
 }
 
