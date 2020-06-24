@@ -13,7 +13,7 @@ import (
 var listenAddr string
 
 func init() {
-	config.Prefix("OCVAB_LEDGER_")
+	config.Prefix("OCVAB_TXNSIM_")
 	config.StringVar(&listenAddr, "listen", ":8080", "The address to listen on")
 }
 
