@@ -2,9 +2,9 @@ name: 'Build'
 
 on:
   push:
-    #paths: 
-    #    - 'go/**'
-    #- 'docker/**'
+    paths: 
+    - 'go/**'
+    - 'docker/**'
     branches:
     - master
   pull_request:
