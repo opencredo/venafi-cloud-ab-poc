@@ -2,9 +2,13 @@ name: 'Terraform'
 
 on:
   push:
+    paths: 
+    - 'terraform/**'
     branches:
     - master
   pull_request:
+    paths: 
+    - 'terraform/**'
 
 jobs:
   terraform:
