@@ -1,4 +1,13 @@
+FROM golang:buster AS build
+ARG GIT_COMMIT_ID=""
+
+RUN mkdir -p /src
+COPY . /src
+WORKDIR /src
+
+RUN make
+
 FROM gcr.io/distroless/base
-COPY ./ledger .
+COPY --from=build /src/bin/ledger .
 ENV OCVAB_LEDGER_LISTEN=":8080"
 CMD [ "./ledger" ]

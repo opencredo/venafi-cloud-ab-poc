@@ -7,6 +7,7 @@ release_dir := bin/release/
 go_files := $(shell find . -path ./vendor -prune -o -path '*/testdata' -prune -o -type f -name '*.go' -print)
 commands := $(notdir $(shell find cmd/* -type d -prune))
 local_bins := $(addprefix bin/,$(commands))
+GIT_COMMIT_ID ?= $(shell git rev-list -1 HEAD)
 
 clean:
 	# Removing all generated files...
@@ -47,7 +48,7 @@ coverage: bin/.coverage.out
 	@go tool cover -html=bin/.coverage.out
 
 $(local_bins): bin/.fmtcheck bin/.vet bin/.coverage.out $(go_files)
-	CGO_ENABLED=0 go build -ldflags "-X main.GitCommit=$(shell git rev-list -1 HEAD)" -o $@ $(PACKAGE)/cmd/$(basename $(@F))
+	CGO_ENABLED=0 go build -ldflags "-X main.GitCommit=$(GIT_COMMIT_ID)" -o $@ $(PACKAGE)/cmd/$(basename $(@F))
 
 build: $(local_bins)
 

@@ -1,4 +1,12 @@
+FROM golang:buster AS build
+
+RUN mkdir -p /src
+COPY . /src
+WORKDIR /src
+
+RUN make
+
 FROM gcr.io/distroless/base
-COPY ./txnsim .
+COPY --from=build /src/bin/txnsim .
 ENV OCVAB_TXNSIM_LISTEN=":8080"
 CMD [ "./txnsim" ]
