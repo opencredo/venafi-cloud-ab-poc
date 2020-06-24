@@ -34,7 +34,6 @@ func Parse() {
 	flag.Parse()
 
 	for _, v := range configValues {
-		fmt.Print("[", v.value, "]\n")
 		if len(v.value) > 0 {
 			*v.loc = v.value
 			continue
