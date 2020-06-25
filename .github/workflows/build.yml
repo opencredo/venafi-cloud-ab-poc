@@ -34,6 +34,7 @@ jobs:
         build_args: GIT_COMMIT_ID=${{ github.sha }}
         tag_with_ref: true
         tag_with_sha: true
+        push: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
 
     - name: Build Txnsim Image
       uses: docker/build-push-action@v1
@@ -46,4 +47,5 @@ jobs:
         build_args: GIT_COMMIT_ID=${{ github.sha }}
         tag_with_ref: true
         tag_with_sha: true
+        push: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
 
