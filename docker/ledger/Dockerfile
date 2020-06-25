@@ -5,7 +5,7 @@ RUN mkdir -p /src
 COPY . /src
 WORKDIR /src
 
-RUN make
+RUN make bin/ledger
 
 FROM gcr.io/distroless/base
 COPY --from=build /src/bin/ledger .
