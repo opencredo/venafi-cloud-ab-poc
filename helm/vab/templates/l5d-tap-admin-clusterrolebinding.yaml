@@ -1,0 +1,16 @@
+{{ if .Values.users }}
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: linkerd-tap-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: linkerd-linkerd-tap-admin
+subjects:
+{{- range .Values.users }}
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: {{ . }}
+{{- end }}
+{{ end }}

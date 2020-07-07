@@ -36,4 +36,5 @@ if [[ ! -z "$OCVAB_BUCKET_NAME" ]]; then
 fi
 
 gsutil mb -b on -l $LOCATION gs://$BUCKET_NAME
+helm repo add linkerd https://helm.linkerd.io/stable
 
