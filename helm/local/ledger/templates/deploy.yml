@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ledger
+  name: ledger
+  namespace: core
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: ledger
+  template:
+    metadata:
+      labels:
+        app: ledger
+    spec:
+      containers:
+      - image: yoink00/ledger:{{ default "latest" .Values.image.tag }}
+        name: ledger
+        resources: {{ .Values.resources }}
+

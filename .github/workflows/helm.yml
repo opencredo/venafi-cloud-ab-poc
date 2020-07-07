@@ -2,13 +2,13 @@ name: 'Helm'
 
 on:
   push:
-    #paths: 
-    #- 'helm/**'
-    #branches:
-    #- master
+    paths: 
+    - 'helm/**'
+    branches:
+    - master
   pull_request:
-    #paths: 
-    #- 'helm/**'
+    paths: 
+    - 'helm/**'
 
 env:
   GCP_REGION: europe-west2
@@ -21,12 +21,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Install yq
-      run: |
-        sudo wget -O /usr/local/bin/yq \
-             https://github.com/mikefarah/yq/releases/download/3.3.0/yq_linux_amd64
-        sudo chmod +x /usr/local/bin/yq
 
     - name: Setup Helm
       uses: azure/setup-helm@v1
@@ -41,7 +35,11 @@ jobs:
       run: gcloud container clusters get-credentials "$GCP_CLUSTER" --region "$GCP_REGION"
 
     - name: Helm Lint
-      run: helm lint vab
+      run: |
+        helm lint vab
+        for f in local/*; do
+          helm lint $f
+        done
       working-directory: helm
 
     - name: Helm repos
@@ -52,9 +50,8 @@ jobs:
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
       working-directory: helm
       run: |
-        yq write --inplace vab/Chart.yaml version $(echo $GIT_COMMIT_ID | cut -b -8)
-        yq write --inplace vab/Chart.yaml appVersion $(echo $GIT_COMMIT_ID | cut -b -8)
-
+        mkdir -p vab/charts
+        cp -r local/* vab/charts
         helm dependency update vab
         release_name=$(helm list -o json | jq '.[] | select(.chart != null) | select(.chart | startswith("vab")) | .name' -r | head -1)
         if [[ -z "$release_name" ]]; then

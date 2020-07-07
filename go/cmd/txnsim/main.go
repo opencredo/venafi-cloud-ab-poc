@@ -32,5 +32,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"data": "hello world"})
 	})
 
+	logger.Info("listening", zap.String("listenAddr", listenAddr))
+
 	r.Run(listenAddr)
 }
