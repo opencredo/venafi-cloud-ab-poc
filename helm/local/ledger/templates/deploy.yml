@@ -19,5 +19,6 @@ spec:
       containers:
       - image: yoink00/ledger:{{ default "latest" .Values.image.tag }}
         name: ledger
-        resources: {{ .Values.resources }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
 
