@@ -12,5 +12,5 @@ module "infrastructure" {
 
   cluster_suffix = random_pet.cluster_suffix.id
 
-  gke_machine_type = "e2-micro"
+  gke_machine_type = "n1-standard-1"
 }
