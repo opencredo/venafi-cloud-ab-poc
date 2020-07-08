@@ -11,4 +11,6 @@ module "infrastructure" {
   secondary_svcs_cidr        = "192.168.64.0/18"
 
   cluster_suffix = random_pet.cluster_suffix.id
+
+  gke_machine_type = "e2-micro"
 }

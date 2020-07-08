@@ -18,4 +18,13 @@ module "kubernetes-engine" {
   region = var.region
 
   subnetwork = local.subnet_name
+
+  remove_default_node_pool = true
+
+  node_pools = [
+    {
+      name         = "default-node-pool"
+      machine_type = var.gke_machine_type
+    },
+  ]
 }

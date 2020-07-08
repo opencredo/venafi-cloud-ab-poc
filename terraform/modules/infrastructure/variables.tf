@@ -37,11 +37,17 @@ variable "secondary_svcs_cidr" {
 
 variable "cluster_suffix" {
   type        = string
-  description = "(reqiuired) An identifying suffix for the cluster"
+  description = "(required) An identifying suffix for the cluster"
 }
 
 variable "cluster_name" {
   type        = string
   description = "(optional) Name of Kubernetes cluster"
   default     = "ocvab-cluster"
+}
+
+variable "gke_machine_type" {
+  type        = string
+  description = "(optional) The machine type for cluster nodes"
+  default     = "e2-micro"
 }
