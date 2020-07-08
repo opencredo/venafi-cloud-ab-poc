@@ -1,3 +1,6 @@
-namespaces: ["core"]
+namespaces:
+    - name: core
+      linkerdEnabled: true
+
 ledger:
   namespace: core

@@ -2,5 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ . }}
+  name: {{ .name }}
+  annotations:
+    linkerd.io/inject: {{ ternary "enabled" "disabled" .linkerdEnabled }}
 {{- end }}
