@@ -5,7 +5,7 @@ metadata:
   labels:
     app: ledger
   name: ledger
-  namespace: core
+  namespace: {{ default "core" .Values.namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
