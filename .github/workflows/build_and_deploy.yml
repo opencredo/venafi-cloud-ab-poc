@@ -50,6 +50,11 @@ jobs:
         DEFAULT_BUMP: patch
         DRY_RUN: true
 
+    - name: Copy spec for Docker build
+      run: |
+        mkdir .api
+        cp ../api/* .api
+
     - name: Build Ledger Image
       uses: docker/build-push-action@v1
       with:

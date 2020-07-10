@@ -1,0 +1,121 @@
+openapi: 3.0.2
+info:
+  title: Ledger API
+  description: API for the Ledger Service
+  version: 0.0.0
+servers:
+  - url: http://ledger.service
+    description: Optional server description, e.g. Main (production) server
+paths:
+  /transactions:
+    get:
+      tags:
+        - transactions
+      summary: Returns all transactions.
+      responses:
+        "200":
+          description: A JSON array of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/Transaction"
+                    - $ref: "#/components/schemas/TransactionIdentifiers"
+    post:
+      tags:
+        - transactions
+      summary: Adds a transaction to the Ledger
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transaction"
+      responses:
+        "201":
+          description: The transaction was successfully added
+          headers:
+            Location:
+              description: The location of the added transaction
+              schema:
+                type: string
+        "400":
+          description: The transaction could not be processed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /transactions/{transactionId}:
+    get:
+      tags:
+        - transactions
+      summary: Returns a single transaction.
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+          examples:
+            Identifier:
+              summary: A transaction identifier
+              value: "519bcfaf-cb59-44df-9e02-8d628f40ced8"
+      responses:
+        "200":
+          description: A JSON transaction object
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Transaction"
+                  - $ref: "#/components/schemas/TransactionIdentifiers"
+        "404":
+          description: No transaction found
+
+components:
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        from_acct:
+          type: integer
+          example: 12345678
+        to_acct:
+          type: integer
+          example: 12345678
+        amount:
+          type: number
+          format: float
+          example: 123.45
+        description:
+          type: string
+          example: "Buying socks"
+        type:
+          type: string
+          example: "shopping"
+      required:
+        - from_acct
+        - to_acct
+        - amount
+        - description
+        - type
+    TransactionIdentifiers:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "519bcfaf-cb59-44df-9e02-8d628f40ced8"
+        hash:
+          type: string
+          example: "787EBF1FE4DE44B603BF467552733725A8E6DF2DBD8208242F4B27554DBC175D"
+      required:
+        - id
+        - hash
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Unable to process transaction body"

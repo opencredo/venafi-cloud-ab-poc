@@ -2,11 +2,13 @@ package main
 
 import (
 	"net/http"
-	"time"
 
-	ginzap "github.com/gin-contrib/zap"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/app/ledger"
 	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/config"
+	_ "github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/swaggerui/statik"
+	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/zaplog"
 	"go.uber.org/zap"
 )
 
@@ -23,16 +25,16 @@ func main() {
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 
-	r := gin.New()
-	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
-	r.Use(ginzap.RecoveryWithZap(logger, true))
+	r := chi.NewRouter()
+	// A good base middleware stack
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(zaplog.ZapLog(logger))
+	r.Use(middleware.Recoverer)
 
-	r.GET("/", func(c *gin.Context) {
-		logger.Info("new request", zap.String("clientIp", c.ClientIP()))
-		c.JSON(http.StatusOK, gin.H{"data": "hello world"})
-	})
+	r.Mount("/", ledger.Handler())
 
 	logger.Info("listening", zap.String("listenAddr", listenAddr))
 
-	r.Run(listenAddr)
+	http.ListenAndServe(listenAddr, r)
 }
