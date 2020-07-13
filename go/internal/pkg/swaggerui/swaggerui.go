@@ -16,9 +16,15 @@ func Handler() http.Handler {
 
 	r := chi.NewMux()
 	r.MethodFunc(http.MethodGet, "/swaggerui/swagger.json", func(w http.ResponseWriter, req *http.Request) {
+		serviceName := req.Header.Get("X-Ocvab-Service")
+		namespace := req.Header.Get("X-Ocvab-Namespace")
+		url := "/"
+		if serviceName != "" && namespace != "" {
+			url = "/" + serviceName + "/" + namespace + "/"
+		}
 		s.Servers = []*openapi3.Server{
 			{
-				URL:         "/",
+				URL:         url,
 				Description: "This service",
 				Variables:   s.Servers[0].Variables,
 			},
