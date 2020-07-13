@@ -3,7 +3,7 @@
 replicaCount: 1
 image:
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 0.0.17
+  tag: 0.0.19
   name: "yoink00/txnsim"
 resources: {}
 # We usually recommend not to specify default resources and to leave this as a conscious
@@ -17,8 +17,6 @@ resources: {}
 #   cpu: 100m
 #   memory: 128Mi
 serviceName: txnsim
-
 ledgerServiceAddress: ""
-
 global:
   domainName: ""

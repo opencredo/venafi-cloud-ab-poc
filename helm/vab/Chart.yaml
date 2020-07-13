@@ -2,8 +2,8 @@ apiVersion: v2
 name: vab
 description: Venafi Afterburners Parent Chart
 type: application
-version: 0.0.18
-appVersion: 0.0.18
+version: 0.0.19
+appVersion: 0.0.19
 dependencies:
 - name: linkerd2
   version: "~2.8.1"
@@ -14,8 +14,8 @@ dependencies:
 - name: ledger
   tags:
   - local
-  version: 0.0.18
+  version: 0.0.19
 - name: txnsim
   tags:
   - local
-  version: 0.0.18
+  version: 0.0.19
