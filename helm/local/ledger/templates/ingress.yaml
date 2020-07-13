@@ -5,7 +5,7 @@ metadata:
   namespace: {{ default "core" .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
       grpc_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
@@ -15,7 +15,7 @@ spec:
   - host: {{ .Values.global.domainName }}
     http:
       paths:
-      - path: /{{ default "core" .Values.namespace }}/{{ .Values.serviceName }}
+      - path: /{{ default "core" .Values.namespace }}/{{ .Values.serviceName }}(/|$)(.*)
         backend:
           serviceName: {{ .Values.serviceName }}-svc
           servicePort: 80

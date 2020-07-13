@@ -165,7 +165,7 @@ jobs:
     - name: Helm repos
       run: |
         helm repo add linkerd https://helm.linkerd.io/stable
-        helm repo add nginx-stable https://helm.nginx.com/stable
+        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 
     - name: Install or upgrade Chart
       working-directory: helm
