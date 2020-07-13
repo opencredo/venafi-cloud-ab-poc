@@ -58,7 +58,11 @@ func (t *transactionsImpl) PostTransactions(w http.ResponseWriter, r *http.Reque
 
 	t.transactions = append(t.transactions, txn)
 
-	w.Header().Add("Location", fmt.Sprintf("/transactions/%s", txn.Id))
+	requestURI := r.Header.Get("X-Original-Uri")
+	if requestURI == "" {
+		requestURI = r.RequestURI
+	}
+	w.Header().Add("Location", fmt.Sprintf("%s/%s", requestURI, txn.Id))
 	w.WriteHeader(http.StatusCreated)
 }
 
