@@ -10,7 +10,7 @@ metadata:
       proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
       proxy_set_header X-Original-Uri $request_uri;
       proxy_set_header X-Ocvab-Namespace $namespace;
-      proxy_set_header X-Ocvab-Service $service;
+      proxy_set_header X-Ocvab-Service $service_name;
     nginx.ingress.kubernetes.io/use-regex: "true"
 
 spec:
