@@ -20,7 +20,7 @@ func Handler() http.Handler {
 		namespace := req.Header.Get("X-Ocvab-Namespace")
 		url := "/"
 		if serviceName != "" && namespace != "" {
-			url = "/" + serviceName + "/" + namespace + "/"
+			url = "/" + namespace + "/" + serviceName + "/"
 		}
 		s.Servers = []*openapi3.Server{
 			{

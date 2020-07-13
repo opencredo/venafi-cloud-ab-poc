@@ -18,7 +18,7 @@ spec:
   - host: {{ .Values.global.domainName }}
     http:
       paths:
-      - path: /{{ default "core" .Values.namespace }}/{{ .Values.serviceName }}(/|$)(.*)
+      - path: /{{ default "core" .Values.namespace }}/{{ .Values.serviceName }}-svc(/|$)(.*)
         backend:
           serviceName: {{ .Values.serviceName }}-svc
           servicePort: 80
