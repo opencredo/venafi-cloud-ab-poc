@@ -12,7 +12,8 @@ metadata:
 
 spec:
   rules:
-  - http:
+  - host: {{ .Values.global.domainName }}
+    http:
       paths:
       - path: /{{ default "core" .Values.namespace }}/{{ .Values.serviceName }}
         backend:
