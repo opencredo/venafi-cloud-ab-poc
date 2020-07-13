@@ -15,7 +15,6 @@ spec:
   - http:
       paths:
       - path: /{{ default "core" .Values.namespace }}/{{ .Values.serviceName }}
-        pathType: Prefix
         backend:
           serviceName: {{ .Values.serviceName }}-svc
           servicePort: 80
