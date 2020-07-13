@@ -2,5 +2,11 @@ dependencies:
 - name: linkerd2
   repository: https://helm.linkerd.io/stable
   version: 2.8.1
-digest: sha256:74614c53bab9d469bb8f2bce9f5612c65c586992eef6ac56d760cf671c90523b
-generated: "2020-07-07T21:32:36.7014657+01:00"
+- name: nginx-ingress
+  repository: https://helm.nginx.com/stable
+  version: 0.5.2
+- name: ledger
+  repository: ""
+  version: 0.0.7
+digest: sha256:862d80f52b7dff95ca9ea5147db7273fff1bac0cba710df59ed3343ba2f0f333
+generated: "2020-07-13T13:21:37.3207375+01:00"

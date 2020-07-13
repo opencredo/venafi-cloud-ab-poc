@@ -4,3 +4,6 @@ namespaces:
 
 ledger:
   namespace: core
+
+global:
+  domainName: gloomy-williams.wapbot.co.uk

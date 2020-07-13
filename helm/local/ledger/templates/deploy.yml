@@ -3,22 +3,22 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: ledger
-  name: ledger
+    app: {{ .Values.serviceName }}
+  name: {{ .Values.serviceName }}
   namespace: {{ default "core" .Values.namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: ledger
+      app: {{ .Values.serviceName }}
   template:
     metadata:
       labels:
-        app: ledger
+        app: {{ .Values.serviceName }}
     spec:
       containers:
-      - image: yoink00/ledger:{{ default "latest" .Values.image.tag }}
-        name: ledger
+      - image: {{ .Values.image.name }}:{{ default "latest" .Values.image.tag }}
+        name: {{ .Values.serviceName }}
         ports:
         - containerPort: 8080
         resources:
