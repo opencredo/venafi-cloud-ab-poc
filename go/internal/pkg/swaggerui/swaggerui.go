@@ -45,7 +45,11 @@ func fileServer(r chi.Router, root http.FileSystem) {
 			fs := http.StripPrefix(pathPrefix, http.FileServer(root))
 			fs.ServeHTTP(w, req)
 		} else {
-			http.Redirect(w, req, req.RequestURI+"/", http.StatusTemporaryRedirect)
+			redirectDest := req.Header.Get("X-Original-Uri")
+			if redirectDest == "" {
+				redirectDest = req.RequestURI
+			}
+			http.Redirect(w, req, redirectDest+"/", http.StatusTemporaryRedirect)
 		}
 	})
 }
