@@ -26,6 +26,7 @@ bin/.generate: $(go_files) bin/.vendor
 	# Generating files
 	@go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen
 	@oapi-codegen -generate types,chi-server,spec -package ledgerserver ${API_DIR}/ledger.yaml > internal/pkg/ledgerserver/api.gen.go
+	@oapi-codegen -generate client -package ledgerserver ${API_DIR}/ledger.yaml > internal/pkg/ledgerserver/client.gen.go
 	@go generate ./...
 	@touch bin/.generate
 

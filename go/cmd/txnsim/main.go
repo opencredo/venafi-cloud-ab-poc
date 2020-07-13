@@ -1,20 +1,19 @@
 package main
 
 import (
-	"net/http"
+	"context"
 	"time"
 
-	ginzap "github.com/gin-contrib/zap"
-	"github.com/gin-gonic/gin"
 	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/config"
+	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/ledgerserver"
 	"go.uber.org/zap"
 )
 
-var listenAddr string
+var serverAddr string
 
 func init() {
 	config.Prefix("OCVAB_TXNSIM_")
-	config.StringVar(&listenAddr, "listen", ":8080", "The address to listen on")
+	config.StringVar(&serverAddr, "server", "localhost:8080", "The address to connect to")
 }
 
 func main() {
@@ -23,16 +22,37 @@ func main() {
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 
-	r := gin.New()
-	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
-	r.Use(ginzap.RecoveryWithZap(logger, true))
+	api, err := ledgerserver.NewClientWithResponses(serverAddr)
+	if err != nil {
+		logger.Error("unable to create client", zap.Error(err), zap.String("serverAddr", serverAddr))
+		return
+	}
 
-	r.GET("/", func(c *gin.Context) {
-		logger.Info("new request", zap.String("clientIp", c.ClientIP()))
-		c.JSON(http.StatusOK, gin.H{"data": "hello world"})
-	})
+	ctx := context.Background()
+	for {
+		resp, err := api.PostTransactionsWithResponse(ctx, ledgerserver.PostTransactionsJSONRequestBody{
+			Description: "random stuff",
+			Amount:      123.45,
+			FromAcct:    123456,
+			ToAcct:      123457,
+			Type:        "shopping",
+		})
+		if err != nil {
+			logger.Error("unable to post transaction", zap.Error(err), zap.String("serverAddr", serverAddr))
+			return
+		}
+		if resp.JSON400 != nil {
+			logger.Warn("bad message response", zap.String("error", *resp.JSON400.Error))
+		} else {
+			location, err := resp.HTTPResponse.Location()
+			if err != nil {
+				logger.Error("missing location on response", zap.Error(err))
+				return
+			}
 
-	logger.Info("listening!", zap.String("listenAddr", listenAddr))
+			logger.Info("success", zap.String("location", location.String()))
+		}
 
-	r.Run(listenAddr)
+		time.Sleep(1 * time.Minute)
+	}
 }

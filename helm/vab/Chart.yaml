@@ -15,3 +15,7 @@ dependencies:
   tags:
   - local
   version: 0.0.18
+- name: txnsim
+  tags:
+  - local
+  version: 0.0.18

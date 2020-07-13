@@ -5,5 +5,9 @@ namespaces:
 ledger:
   namespace: core
 
+txnsim:
+  namespace: core
+  ledgerServiceAddress: http://ledger-svc
+
 global:
   domainName: gloomy-williams.wapbot.co.uk
