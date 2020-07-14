@@ -2,6 +2,7 @@ namespaces:
     - name: core
       linkerdEnabled: true
     - name: cert-manager
+      linkerdEnabled: false
 
 ledger:
   namespace: core
