@@ -1,8 +1,8 @@
 namespaces:
     - name: core
       linkerdEnabled: true
-    - name: cert-manager
-      linkerdEnabled: false
+
+venafiApiKey: ""
 
 ledger:
   namespace: core

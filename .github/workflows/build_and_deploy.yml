@@ -196,18 +196,14 @@ jobs:
         else
           echo "Upgrading VAB chart: $FLAG"
           helm upgrade "$release_name" vab $FLAG \
-            --set "linkerd2.global.identityTrustAnchorsPEM=$LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" \
-            --set "linkerd2.identity.issuer.crtExpiry=$LINKERD2_IDENTITY_ISSUER_CRTEXPIRY" \
-            --set "linkerd2.identity.issuer.tls.crtPEM=$LINKERD2_IDENTITY_ISSUER_TLS_CRTPEM" \
-            --set "linkerd2.identity.issuer.tls.keyPEM=$LINKERD2_IDENTITY_ISSUER_TLS_KEYPEM" \
+            --set "linkerd2.global.identityTrustAnchorsPEM=ca.crt" \
+            --set "linkerd2.identity.issuer.scheme=kubernetes.io/tls" \
+            --set "venafiApiKey=$VENAFI_API_KEY"
             --set "users={$USERS}" \
             > $REDIRECT
         fi
       env:
-        LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM: ${{ secrets.LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM }}
-        LINKERD2_IDENTITY_ISSUER_CRTEXPIRY: ${{ secrets.LINKERD2_IDENTITY_ISSUER_CRTEXPIRY }}
-        LINKERD2_IDENTITY_ISSUER_TLS_CRTPEM: ${{ secrets.LINKERD2_IDENTITY_ISSUER_TLS_CRTPEM }}
-        LINKERD2_IDENTITY_ISSUER_TLS_KEYPEM: ${{ secrets.LINKERD2_IDENTITY_ISSUER_TLS_KEYPEM }}
         USERS: ${{ secrets.USERS }}
         GIT_COMMIT_ID: ${{ github.sha }}
         DRY_RUN: ${{ github.ref != 'refs/heads/master' || github.event_name != 'push' }}
+        VENAFI_API_KEY: ${{ secrets.VENAFI_API_KEY }}

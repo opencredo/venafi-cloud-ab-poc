@@ -1,0 +1,42 @@
+apiVersion: v1
+data:
+  apikey: {{ .Values.venafiApiKey }}
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: cloud-venafi-secret
+  namespace: linkerd
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: cloud-venafi-issuer
+  namespace: linkerd
+spec:
+  venafi:
+    zone: "DevOps" # Set this to the Venafi policy zone you want to use
+    cloud:
+      apiTokenSecretRef:
+        name: cloud-venafi-secret
+        key: apikey
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: linkerd-identity-issuer
+  namespace: linkerd
+spec:
+  secretName: linkerd-identity-issuer
+  duration: 24h
+  renewBefore: 1h
+  issuerRef:
+    name: cloud-venafi-issuer
+    kind: Issuer
+  commonName: identity.linkerd.cluster.local
+  isCA: true
+  keyAlgorithm: ecdsa
+  usages:
+  - cert sign
+  - crl sign
+  - server auth
+  - client auth
