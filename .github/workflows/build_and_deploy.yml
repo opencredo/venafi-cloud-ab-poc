@@ -7,6 +7,7 @@ on:
     - 'go/**'
     - 'docker/**'
     - 'scripts/**'
+    - '.github/**'
     branches:
     - master
   pull_request:
@@ -15,6 +16,7 @@ on:
     - 'go/**'
     - 'docker/**'
     - 'scripts/**'
+    - '.github/**'
 
 env:
   GCP_REGION: europe-west2
@@ -188,17 +190,16 @@ jobs:
           echo "Installing VAB chart: $FLAG"
           helm install vab $FLAG -g \
             --set "linkerd2.global.identityTrustAnchorsPEM=$LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" \
-            --set "linkerd2.identity.issuer.crtExpiry=$LINKERD2_IDENTITY_ISSUER_CRTEXPIRY" \
-            --set "linkerd2.identity.issuer.tls.crtPEM=$LINKERD2_IDENTITY_ISSUER_TLS_CRTPEM" \
-            --set "linkerd2.identity.issuer.tls.keyPEM=$LINKERD2_IDENTITY_ISSUER_TLS_KEYPEM" \
+            --set "linkerd2.identity.issuer.scheme=kubernetes.io/tls" \
+            --set "venafiApiKey=$VENAFI_API_KEY" \
             --set "users={$USERS}" \
             > $REDIRECT
         else
           echo "Upgrading VAB chart: $FLAG"
           helm upgrade "$release_name" vab $FLAG \
-            --set "linkerd2.global.identityTrustAnchorsPEM=ca.crt" \
+            --set "linkerd2.global.identityTrustAnchorsPEM=$LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" \
             --set "linkerd2.identity.issuer.scheme=kubernetes.io/tls" \
-            --set "venafiApiKey=$VENAFI_API_KEY"
+            --set "venafiApiKey=$VENAFI_API_KEY" \
             --set "users={$USERS}" \
             > $REDIRECT
         fi
