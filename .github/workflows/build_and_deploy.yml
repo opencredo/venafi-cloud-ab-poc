@@ -6,14 +6,15 @@ on:
     - 'helm/**'
     - 'go/**'
     - 'docker/**'
+    - 'scripts/**'
     branches:
     - master
   pull_request:
     paths: 
     - 'helm/**'
-    - 'helm/**'
     - 'go/**'
     - 'docker/**'
+    - 'scripts/**'
 
 env:
   GCP_REGION: europe-west2
