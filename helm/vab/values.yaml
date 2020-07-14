@@ -9,5 +9,16 @@ txnsim:
   namespace: core
   ledgerServiceAddress: http://ledger-svc
 
+vault:
+  server:
+    dataStorage:
+      enabled: false
+    auditStorage:
+      enabled: false
+    dev:
+      enabled: true
+    ui:
+      enabled: true
+
 global:
   domainName: gloomy-williams.wapbot.co.uk

@@ -5,8 +5,14 @@ dependencies:
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
   version: 2.11.0
+- name: vault
+  repository: https://helm.releases.hashicorp.com
+  version: 0.6.0
 - name: ledger
   repository: ""
-  version: 0.0.10
-digest: sha256:d03a67138d2f30134d5a18c561d93a727a2fca2df0df4012fdce09046079743b
-generated: "2020-07-13T16:38:59.8445546+01:00"
+  version: 0.0.19
+- name: txnsim
+  repository: ""
+  version: 0.0.19
+digest: sha256:65e6738447ab8e388cb469c869d9ab9154260b83dc477ca10c4f37bfc2687b75
+generated: "2020-07-14T07:13:46.9212618+01:00"
