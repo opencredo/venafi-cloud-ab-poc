@@ -1,6 +1,8 @@
 namespaces:
     - name: core
       linkerdEnabled: true
+    - name: cert-manager
+      linkerdEnabled: false
 
 ledger:
   namespace: core
@@ -9,16 +11,8 @@ txnsim:
   namespace: core
   ledgerServiceAddress: http://ledger-svc
 
-vault:
-  server:
-    dataStorage:
-      enabled: false
-    auditStorage:
-      enabled: false
-    dev:
-      enabled: true
-    ui:
-      enabled: true
+cert-manager:
+  installCRDs: true
 
 global:
   domainName: gloomy-williams.wapbot.co.uk

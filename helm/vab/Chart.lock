@@ -5,14 +5,14 @@ dependencies:
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
   version: 2.11.0
-- name: vault
-  repository: https://helm.releases.hashicorp.com
-  version: 0.6.0
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v0.15.2
 - name: ledger
   repository: ""
-  version: 0.0.19
+  version: 0.0.20
 - name: txnsim
   repository: ""
-  version: 0.0.19
-digest: sha256:65e6738447ab8e388cb469c869d9ab9154260b83dc477ca10c4f37bfc2687b75
-generated: "2020-07-14T07:13:46.9212618+01:00"
+  version: 0.0.20
+digest: sha256:1fed727eab236ca09642ca65317b272d3adab43612301cc9f82af23226f644b2
+generated: "2020-07-14T10:29:03.594706+01:00"

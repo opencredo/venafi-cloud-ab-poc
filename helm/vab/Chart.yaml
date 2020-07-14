@@ -11,9 +11,9 @@ dependencies:
 - name: ingress-nginx
   version: "~2.11.0"
   repository: "@ingress-nginx"
-- name: vault
-  version: "~0.6.0"
-  repository: "@hashicorp"
+- name: cert-manager
+  version: "v0.15.2"
+  repository: "@jetstack"
 - name: ledger
   tags:
   - local
