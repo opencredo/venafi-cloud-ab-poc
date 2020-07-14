@@ -211,3 +211,7 @@ jobs:
         GIT_COMMIT_ID: ${{ github.sha }}
         DRY_RUN: ${{ github.ref != 'refs/heads/master' || github.event_name != 'push' }}
 
+    - name: Run Vault configuration script
+      working-directory: scripts
+      run: ./vault-config.sh
+
