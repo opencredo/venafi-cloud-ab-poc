@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 if [[ -z "$BUCKET_NAME" ]]; then
   BUCKET_NAME="vault_script_state"
@@ -27,7 +28,18 @@ fi
 # Main
 ##
 
-echo "Doing nothing"
+echo "Running script..."
+
+service=$(kubectl get pod -A -o custom-columns=name:metadata.name,namespace:metadata.namespace | grep vault-0 | awk '{print $1}')
+namespace=$(kubectl get pod -A -o custom-columns=name:metadata.name,namespace:metadata.namespace | grep vault-0 | awk '{print $2}')
+
+#kubectl exec $service -n $namespace -- sh -c 'vault secrets enable -path=internal kv-v2'
+#kubectl exec $service -n $namespace -- sh -c 'vault kv put internal/database/config username="db-readonly-username" password="db-secret-password"'
+#kubectl exec $service -n $namespace -- sh -c 'vault auth enable kubernetes'
+#kubectl exec $service -n $namespace -- sh -c 'vault write auth/kubernetes/config \
+#                                         token_reviewer_jwt="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+#                                         kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443" \
+#                                         kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
 
 ##
 # End Main
