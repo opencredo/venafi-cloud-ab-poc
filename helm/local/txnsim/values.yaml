@@ -3,7 +3,7 @@
 replicaCount: 1
 image:
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 0.0.26
+  tag: 0.0.27
   name: "yoink00/txnsim"
 resources: {}
 # We usually recommend not to specify default resources and to leave this as a conscious
