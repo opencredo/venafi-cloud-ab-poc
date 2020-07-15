@@ -34,7 +34,7 @@ spec:
     kind: Issuer
   commonName: identity.linkerd.cluster.local
   isCA: true
-  keyAlgorithm: ecdsa
+  keyAlgorithm: rsa
   usages:
   - cert sign
   - crl sign
