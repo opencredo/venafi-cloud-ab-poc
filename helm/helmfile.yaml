@@ -1,51 +1,51 @@
 repositories:
-  - name: linkerd
-    url: https://helm.linkerd.io/stable
-  - name: jetstack
-    url: https://charts.jetstack.io
-  - name: ingress-nginx
-    url: https://kubernetes.github.io/ingress-nginx
+- name: linkerd
+  url: https://helm.linkerd.io/stable
+- name: jetstack
+  url: https://charts.jetstack.io
+- name: ingress-nginx
+  url: https://kubernetes.github.io/ingress-nginx
 releases:
-  - name: linkerd
-    version: "~2.8.1"
-    namespace: linkerd
-    chart: linkerd/linkerd2
-    set:
-      - name: global.identityTrustAnchorsPEM
-        file: ca.crt
-      - name: identity.issuer.scheme
-        value: kubernetes.io/tls
-  - name: cert-manager
-    labels:
-      cert-manager: "true"
-    version: "v0.15.2"
-    chart: jetstack/cert-manager
-    namespace: cert-manager
-    values:
-      - installCRDs: true
-  - name: common
-    labels:
-      local: "true"
-    namespace: core
-    chart: "./local/common"
-    version: 0.0.24
-    values:
-      - venafiApiKey: '{{ requiredEnv "VENAFI_API_KEY" }}'
-      - users: '{{ requiredEnv "USERS" }}'
-  - name: ledger
-    labels:
-      local: "true"
-    namespace: core
-    chart: "./local/ledger"
-    version: 0.0.24
-    values:
-      - global:
-          domainName: gloomy-williams.wapbot.co.uk
-  - name: txnsim
-    labels:
-      local: "true"
-    namespace: core
-    chart: "./local/txnsim"
-    version: 0.0.24
-    values:
-      - ledgerServiceAddress: http://ledger-svc
+- name: linkerd
+  version: "~2.8.1"
+  namespace: linkerd
+  chart: linkerd/linkerd2
+  set:
+  - name: global.identityTrustAnchorsPEM
+    file: ca.crt
+  - name: identity.issuer.scheme
+    value: kubernetes.io/tls
+- name: cert-manager
+  labels:
+    cert-manager: "true"
+  version: "v0.15.2"
+  chart: jetstack/cert-manager
+  namespace: cert-manager
+  values:
+  - installCRDs: true
+- name: common
+  labels:
+    local: "true"
+  namespace: core
+  chart: "./local/common"
+  version: 0.0.26
+  values:
+  - venafiApiKey: '{{ requiredEnv "VENAFI_API_KEY" }}'
+  - users: '{{ requiredEnv "USERS" }}'
+- name: ledger
+  labels:
+    local: "true"
+  namespace: core
+  chart: "./local/ledger"
+  version: 0.0.26
+  values:
+  - global:
+      domainName: gloomy-williams.wapbot.co.uk
+- name: txnsim
+  labels:
+    local: "true"
+  namespace: core
+  chart: "./local/txnsim"
+  version: 0.0.26
+  values:
+  - ledgerServiceAddress: http://ledger-svc
