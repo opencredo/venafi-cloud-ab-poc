@@ -14,7 +14,7 @@ metadata:
   namespace: linkerd
 spec:
   venafi:
-    zone: "DevOps" # Set this to the Venafi policy zone you want to use
+    zone: {{ .Values.venafiPolicyZone }} # Set this to the Venafi policy zone you want to use
     cloud:
       apiTokenSecretRef:
         name: cloud-venafi-secret

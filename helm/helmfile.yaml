@@ -32,6 +32,7 @@ releases:
   values:
   - venafiApiKey: '{{ requiredEnv "VENAFI_API_KEY" }}'
   - users: '{{ requiredEnv "USERS" }}'
+  - venafiPolicyZone: '{{ requiredEnv "VENAFI_POLICY_ZONE" }}'
 - name: ledger
   labels:
     local: "true"

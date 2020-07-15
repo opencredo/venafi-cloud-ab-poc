@@ -2,6 +2,7 @@ namespaces:
 - name: core
   linkerdEnabled: true
 venafiApiKey: ""
+venafiPolicyZone: ""
 global:
   domainName: gloomy-williams.wapbot.co.uk
 image:
