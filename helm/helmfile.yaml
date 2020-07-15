@@ -28,7 +28,7 @@ releases:
     local: "true"
   namespace: core
   chart: "./local/common"
-  version: 0.0.27
+  version: 0.0.28
   values:
   - venafiApiKey: '{{ requiredEnv "VENAFI_API_KEY" }}'
   - users: '{{ requiredEnv "USERS" }}'
@@ -38,7 +38,7 @@ releases:
     local: "true"
   namespace: core
   chart: "./local/ledger"
-  version: 0.0.27
+  version: 0.0.28
   values:
   - global:
       domainName: gloomy-williams.wapbot.co.uk
@@ -47,6 +47,6 @@ releases:
     local: "true"
   namespace: core
   chart: "./local/txnsim"
-  version: 0.0.27
+  version: 0.0.28
   values:
   - ledgerServiceAddress: http://ledger-svc
