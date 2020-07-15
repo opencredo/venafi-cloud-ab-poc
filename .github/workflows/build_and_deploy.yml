@@ -96,10 +96,8 @@ jobs:
         git config --global user.name "Robot Overlord"
 
         # Update main Chart versions
-        yq write --inplace vab/Chart.yaml version $RELEASE_VERSION
-        yq write --inplace vab/Chart.yaml appVersion $RELEASE_VERSION
-        yq write --inplace vab/Chart.yaml "dependencies.(tags.*==local).version" $RELEASE_VERSION
-        git add vab/Chart.yaml
+        yq write -i helmfile.yaml "releases.(labels.local==true).version" $RELEASE_VERSION
+        git add helmfile.yaml
 
         # Update version in service specific charts
         for f in local/*; do
@@ -145,8 +143,17 @@ jobs:
       with:
         ref: ${{ needs.build.outputs.git_ref }}
 
+    - name: Install helmfile
+      run: |
+        sudo wget -O /usr/local/bin/helmfile \
+             https://github.com/roboll/helmfile/releases/download/v0.120.0/helmfile_linux_amd64
+        sudo chmod +x /usr/local/bin/helmfile
+
     - name: Setup Helm
       uses: azure/setup-helm@v1
+
+    - name: Install helm diff
+      run: helm plugin install https://github.com/databus23/helm-diff --version master
 
     - name: Setup gcloud
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
@@ -159,50 +166,26 @@ jobs:
 
     - name: Helm Lint
       run: |
-        helm lint vab
         for f in local/*; do
           helm lint $f
         done
       working-directory: helm
 
-    - name: Helm repos
-      run: |
-        helm repo add linkerd https://helm.linkerd.io/stable
-        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-        helm repo add jetstack https://charts.jetstack.io
-
     - name: Install or upgrade Chart
       working-directory: helm
       run: |
-        mkdir -p vab/charts
-        cp -r local/* vab/charts
-        helm dependency update vab
-        release_name=$(helm list -o json | jq '.[] | select(.chart != null) | select(.chart | startswith("vab")) | .name' -r | head -1)
-
+        echo "$LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" > ca.crt
         FLAG=""
         REDIRECT="/dev/stdout"
+        APPLY="y"
         if [[ -z "$DRY_RUN" || "$DRY_RUN" == "true" ]]; then
-          FLAG="--dry-run"
+          FLAG="-i"
           REDIRECT="/dev/null"
+          APPLY=n
         fi
 
-        if [[ -z "$release_name" ]]; then
-          echo "Installing VAB chart: $FLAG"
-          helm install vab $FLAG -g \
-            --set "linkerd2.global.identityTrustAnchorsPEM=$LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" \
-            --set "linkerd2.identity.issuer.scheme=kubernetes.io/tls" \
-            --set "venafiApiKey=$VENAFI_API_KEY" \
-            --set "users={$USERS}" \
-            > $REDIRECT
-        else
-          echo "Upgrading VAB chart: $FLAG"
-          helm upgrade "$release_name" vab $FLAG \
-            --set "linkerd2.global.identityTrustAnchorsPEM=$LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" \
-            --set "linkerd2.identity.issuer.scheme=kubernetes.io/tls" \
-            --set "venafiApiKey=$VENAFI_API_KEY" \
-            --set "users={$USERS}" \
-            > $REDIRECT
-        fi
+        echo "Upgrading charts: $FLAG"
+        echo $APPLY | helmfile $FLAG apply --suppress-secrets > $REDIRECT
       env:
         USERS: ${{ secrets.USERS }}
         GIT_COMMIT_ID: ${{ github.sha }}

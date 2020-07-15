@@ -1,0 +1,9 @@
+{{- range .Values.namespaces }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .name }}
+  annotations:
+    linkerd.io/inject: {{ ternary "enabled" "disabled" .linkerdEnabled }}
+{{- end }}
