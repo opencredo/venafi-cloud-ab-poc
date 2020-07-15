@@ -175,6 +175,7 @@ jobs:
       working-directory: helm
       run: |
         echo "$LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" > ca.crt
+
         FLAG=""
         REDIRECT="/dev/stdout"
         APPLY="y"
