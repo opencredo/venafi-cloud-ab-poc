@@ -10,11 +10,18 @@ releases:
   version: "~2.8.1"
   namespace: linkerd
   chart: linkerd/linkerd2
-  set:
-  - name: global.identityTrustAnchorsPEM
-    file: ca.crt
-  - name: identity.issuer.scheme
-    value: kubernetes.io/tls
+  values:
+  - global:
+      identityTrustAnchorsPEM: |
+{{ requiredEnv "LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" | indent 8 }}
+  - identity:
+      issuer:
+        crtExpiry: '{{ requiredEnv "LINKERD2_IDENTITY_ISSUER_CRTEXPIRY" }}'
+        tls:
+          crtPEM: |
+{{ requiredEnv "LINKERD2_IDENTITY_ISSUER_TLS_CRTPEM" | indent 12 }}
+          keyPEM: |
+{{ requiredEnv "LINKERD2_IDENTITY_ISSUER_TLS_KEYPEM" | indent 12 }}
 - name: cert-manager
   labels:
     cert-manager: "true"
