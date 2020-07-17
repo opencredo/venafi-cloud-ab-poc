@@ -174,8 +174,6 @@ jobs:
     - name: Install or upgrade Chart
       working-directory: helm
       run: |
-        echo "$LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" > ca.crt
-
         FLAG=""
         REDIRECT="/dev/stdout"
         APPLY="y"
@@ -194,5 +192,8 @@ jobs:
         GIT_COMMIT_ID: ${{ github.sha }}
         DRY_RUN: ${{ github.ref != 'refs/heads/master' || github.event_name != 'push' }}
         VENAFI_API_KEY: ${{ secrets.VENAFI_API_KEY }}
-        LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM: ${{ secrets.LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM }}
         VENAFI_POLICY_ZONE: ${{ secrets.VENAFI_POLICY_ZONE }}
+        LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM: ${{ secrets.LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM }}
+        LINKERD2_IDENTITY_ISSUER_CRTEXPIRY: ${{ secrets.LINKERD2_IDENTITY_ISSUER_CRTEXPIRY }}
+        LINKERD2_IDENTITY_ISSUER_TLS_CRTPEM: ${{ secrets.LINKERD2_IDENTITY_ISSUER_TLS_CRTPEM }}
+        LINKERD2_IDENTITY_ISSUER_TLS_KEYPEM: ${{ secrets.LINKERD2_IDENTITY_ISSUER_TLS_KEYPEM }}
