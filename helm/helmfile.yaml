@@ -5,6 +5,8 @@ repositories:
   url: https://charts.jetstack.io
 - name: ingress-nginx
   url: https://kubernetes.github.io/ingress-nginx
+- name: cockroachdb
+  url: https://charts.cockroachdb.com
 releases:
 - name: linkerd
   version: "~2.8.1"
@@ -30,6 +32,28 @@ releases:
   namespace: cert-manager
   values:
   - installCRDs: true
+- name: cockroachdb
+  version: "4.1.0"
+  chart: cockroachdb/cockroachdb
+  namespace: cockroachdb
+  values:
+  - statefulset:
+      resources:
+        requests:
+          memory: 2Gi
+        limits:
+          memory: 2Gi
+  - conf:
+      cache: 500Mi
+      max-sql-memory: 500Mi
+  - storage:
+      persistentVolume:
+        size: 10Gi
+  - tls:
+      enabled: true
+      certs:
+        provided: true
+        tlsSecret: true
 - name: common
   labels:
     local: "true"

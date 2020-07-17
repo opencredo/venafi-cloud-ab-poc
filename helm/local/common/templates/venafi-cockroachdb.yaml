@@ -1,0 +1,73 @@
+apiVersion: v1
+data:
+  apikey: {{ .Values.venafiApiKey }}
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: cloud-venafi-secret
+  namespace: cockroachdb
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: cloud-venafi-issuer
+  namespace: cockroachdb
+spec:
+  venafi:
+    zone: {{ .Values.venafiPolicyZone }} # Set this to the Venafi policy zone you want to use
+    cloud:
+      apiTokenSecretRef:
+        name: cloud-venafi-secret
+        key: apikey
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: cockroachdb-node
+  namespace: cockroachdb
+spec:
+  secretName: cockroachdb-node
+  duration: 24h
+  renewBefore: 1h
+  issuerRef:
+    name: cloud-venafi-issuer
+    kind: Issuer
+  commonName: node
+  isCA: false
+  keyAlgorithm: rsa
+  usages:
+  - server auth
+  - client auth
+  dnsNames:
+  - cockroachdb-0.cockroachdb.cockroachdb.svc.cluster.local
+  - cockroachdb-1.cockroachdb.cockroachdb.svc.cluster.local
+  - cockroachdb-2.cockroachdb.cockroachdb.svc.cluster.local
+  - cockroachdb-0.cockroachdb.svc.cluster.local
+  - cockroachdb-1.cockroachdb.svc.cluster.local
+  - cockroachdb-2.cockroachdb.svc.cluster.local
+  - cockroachdb-0.cockroachdb
+  - cockroachdb-1.cockroachdb
+  - cockroachdb-2.cockroachdb
+  - cockroachdb-0
+  - cockroachdb-1
+  - cockroachdb-2
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: cockroachdb-root
+  namespace: cockroachdb
+spec:
+  secretName: cockroachdb-root
+  duration: 24h
+  renewBefore: 1h
+  issuerRef:
+    name: cloud-venafi-issuer
+    kind: Issuer
+  commonName: root
+  isCA: false
+  keyAlgorithm: rsa
+  usages:
+  - server auth
+  - client auth
+
