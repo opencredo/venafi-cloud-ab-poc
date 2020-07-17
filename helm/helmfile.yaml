@@ -1,101 +1,102 @@
 repositories:
-  - name: linkerd
-    url: https://helm.linkerd.io/stable
-  - name: jetstack
-    url: https://charts.jetstack.io
-  - name: ingress-nginx
-    url: https://kubernetes.github.io/ingress-nginx
-  - name: cockroachdb
-    url: https://charts.cockroachdb.com
+- name: linkerd
+  url: https://helm.linkerd.io/stable
+- name: jetstack
+  url: https://charts.jetstack.io
+- name: ingress-nginx
+  url: https://kubernetes.github.io/ingress-nginx
+- name: cockroachdb
+  url: https://charts.cockroachdb.com
 releases:
-  - name: linkerd
-    version: "~2.8.1"
-    namespace: linkerd
-    createNamespace: false
-    needs:
-      - core/common
-    chart: linkerd/linkerd2
-    values:
-      - global:
-          identityTrustAnchorsPEM: |
-            {{- requiredEnv "LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" | nindent 8 }}
-      - identity:
-          issuer:
-            crtExpiry: '{{ requiredEnv "LINKERD2_IDENTITY_ISSUER_CRTEXPIRY" }}'
-            tls:
-              crtPEM: |
-                {{- requiredEnv "LINKERD2_IDENTITY_ISSUER_TLS_CRTPEM" | nindent 12 }}
-              keyPEM: |
-                {{- requiredEnv "LINKERD2_IDENTITY_ISSUER_TLS_KEYPEM" | nindent 12 }}
-  - name: cert-manager
-    labels:
-      cert-manager: "true"
-    version: "v0.15.2"
-    chart: jetstack/cert-manager
-    namespace: cert-manager
-    needs:
-      - core/common
-    values:
-      - installCRDs: true
-  - name: cockroachdb
-    version: "4.1.0"
-    chart: cockroachdb/cockroachdb
-    namespace: cockroachdb
-    needs:
-      - core/common
-    values:
-      - statefulset:
-          resources:
-            requests:
-              memory: 2Gi
-            limits:
-              memory: 2Gi
-      - conf:
-          cache: 500Mi
-          max-sql-memory: 500Mi
-      - storage:
-          persistentVolume:
-            size: 10Gi
-      - tls:
-          enabled: true
-          certs:
-            provided: true
-            tlsSecret: true
-  - name: common
-    labels:
-      local: "true"
-    namespace: core
-    createNamespace: true
-    hooks:
-      - events: ['postsync']
-        command: "kubectl"
-        args: ['patch', 'ns', 'core', '--patch', '{ "metadata": { "annotations": { "linkerd.io/inject": "enabled" } } }']
-    chart: "./local/common"
-    version: 0.0.30
-    values:
-      - venafiApiKey: '{{ requiredEnv "VENAFI_API_KEY" }}'
-      - users: '{{ requiredEnv "USERS" }}'
-      - venafiPolicyZone: '{{ requiredEnv "VENAFI_POLICY_ZONE" }}'
-  - name: ledger
-    labels:
-      local: "true"
-    namespace: core
-    createNamespace: false
-    needs:
-      - core/common
-    chart: "./local/ledger"
-    version: 0.0.30
-    values:
-      - global:
-          domainName: gloomy-williams.wapbot.co.uk
-  - name: txnsim
-    labels:
-      local: "true"
-    namespace: core
-    createNamespace: false
-    needs:
-      - core/common
-    chart: "./local/txnsim"
-    version: 0.0.30
-    values:
-      - ledgerServiceAddress: http://ledger-svc
+- name: linkerd
+  version: "~2.8.1"
+  namespace: linkerd
+  createNamespace: false
+  needs:
+  - core/common
+  chart: linkerd/linkerd2
+  values:
+  - global:
+      identityTrustAnchorsPEM: |
+        {{- requiredEnv "LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" | nindent 8 }}
+  - identity:
+      issuer:
+        crtExpiry: '{{ requiredEnv "LINKERD2_IDENTITY_ISSUER_CRTEXPIRY" }}'
+        tls:
+          crtPEM: |
+            {{- requiredEnv "LINKERD2_IDENTITY_ISSUER_TLS_CRTPEM" | nindent 12 }}
+          keyPEM: |
+            {{- requiredEnv "LINKERD2_IDENTITY_ISSUER_TLS_KEYPEM" | nindent 12 }}
+- name: cert-manager
+  labels:
+    cert-manager: "true"
+  version: "v0.15.2"
+  chart: jetstack/cert-manager
+  namespace: cert-manager
+  needs:
+  - core/common
+  values:
+  - installCRDs: true
+- name: cockroachdb
+  version: "4.1.0"
+  chart: cockroachdb/cockroachdb
+  namespace: cockroachdb
+  needs:
+  - core/common
+  values:
+  - statefulset:
+      resources:
+        requests:
+          memory: 2Gi
+        limits:
+          memory: 2Gi
+  - conf:
+      cache: 500Mi
+      max-sql-memory: 500Mi
+  - storage:
+      persistentVolume:
+        size: 10Gi
+  - tls:
+      enabled: true
+      certs:
+        provided: true
+        tlsSecret: true
+- name: common
+  labels:
+    local: "true"
+  namespace: core
+  createNamespace: true
+  hooks:
+  - events: ['postsync']
+    command: "kubectl"
+    args: ['patch', 'ns', 'core', '--patch', '{ "metadata": { "annotations": { "linkerd.io/inject":
+        "enabled" } } }']
+  chart: "./local/common"
+  version: 0.0.31
+  values:
+  - venafiApiKey: '{{ requiredEnv "VENAFI_API_KEY" }}'
+  - users: '{{ requiredEnv "USERS" }}'
+  - venafiPolicyZone: '{{ requiredEnv "VENAFI_POLICY_ZONE" }}'
+- name: ledger
+  labels:
+    local: "true"
+  namespace: core
+  createNamespace: false
+  needs:
+  - core/common
+  chart: "./local/ledger"
+  version: 0.0.31
+  values:
+  - global:
+      domainName: gloomy-williams.wapbot.co.uk
+- name: txnsim
+  labels:
+    local: "true"
+  namespace: core
+  createNamespace: false
+  needs:
+  - core/common
+  chart: "./local/txnsim"
+  version: 0.0.31
+  values:
+  - ledgerServiceAddress: http://ledger-svc
