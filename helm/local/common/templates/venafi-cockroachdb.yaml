@@ -37,6 +37,7 @@ spec:
   - server auth
   - client auth
   dnsNames:
+  - cockroachdb-public.cockroachdb.svc.cluster.local
   - cockroachdb-0.cockroachdb.cockroachdb.svc.cluster.local
   - cockroachdb-1.cockroachdb.cockroachdb.svc.cluster.local
   - cockroachdb-2.cockroachdb.cockroachdb.svc.cluster.local
