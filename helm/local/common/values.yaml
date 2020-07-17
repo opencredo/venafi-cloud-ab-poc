@@ -1,6 +1,4 @@
-namespaces:
-- name: core
-  linkerdEnabled: true
+namespaces: []
 venafiApiKey: ""
 venafiPolicyZone: ""
 global:

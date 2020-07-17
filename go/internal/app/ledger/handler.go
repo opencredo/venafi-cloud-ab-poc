@@ -7,12 +7,27 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi"
 	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/ledgerserver"
 	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/swaggerui"
+	"go.uber.org/zap"
 )
+
+var pgConnection string
+var logger *zap.Logger
+var store transactionStore = &memoryStore{}
+
+func RegisterStore(s transactionStore) {
+	store = s
+}
+
+type transactionStore interface {
+	GetAll() ([]*recordedTransaction, error)
+	Get(string) (*recordedTransaction, error)
+	Last() (*recordedTransaction, error)
+	Add(t *recordedTransaction) (string, error)
+}
 
 type recordedTransaction struct {
 	ledgerserver.Transaction
@@ -20,19 +35,23 @@ type recordedTransaction struct {
 }
 
 type transactionsImpl struct {
-	transactions []*recordedTransaction
+	transactions transactionStore
+}
+
+func writeError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusInternalServerError)
+	w.Write([]byte(fmt.Sprintf(`{ "error": "%s" }`, err)))
 }
 
 func (t *transactionsImpl) GetTransactions(w http.ResponseWriter, r *http.Request) {
-	if len(t.transactions) == 0 {
-		w.Write([]byte("[]"))
+	transactions, err := t.transactions.GetAll()
+	if err != nil {
+		writeError(w, err)
 		return
 	}
-
-	buf, err := json.Marshal(t.transactions)
+	buf, err := json.Marshal(transactions)
 	if err != nil {
-		w.Write([]byte(fmt.Sprintf(`{ "error": "%s" }`, err)))
-		w.WriteHeader(http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
 
@@ -42,48 +61,56 @@ func (t *transactionsImpl) GetTransactions(w http.ResponseWriter, r *http.Reques
 func (t *transactionsImpl) PostTransactions(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	sum := sha256.New()
-	if len(t.transactions) > 0 {
-		sum.Write([]byte(t.transactions[len(t.transactions)-1].Hash))
+	last, err := t.transactions.Last()
+	if err != nil {
+		writeError(w, err)
+		return
 	}
+
+	if last != nil {
+		sum.Write([]byte(last.Hash))
+	}
+
 	teer := io.TeeReader(r.Body, sum)
 	d := json.NewDecoder(teer)
 	txn := &recordedTransaction{}
-	err := d.Decode(txn)
+	err = d.Decode(txn)
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{ "error": "%s" }`, err)))
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	txn.Hash = hex.EncodeToString(sum.Sum(nil))
-	txn.Id = strconv.Itoa(len(t.transactions))
 
-	t.transactions = append(t.transactions, txn)
+	id, err := t.transactions.Add(txn)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
 
 	requestURI := r.Header.Get("X-Original-Uri")
 	if requestURI == "" {
 		requestURI = r.RequestURI
 	}
-	w.Header().Add("Location", fmt.Sprintf("%s/%s", requestURI, txn.Id))
+	w.Header().Add("Location", fmt.Sprintf("%s/%s", requestURI, id))
 	w.WriteHeader(http.StatusCreated)
 }
 
 func (t *transactionsImpl) GetTransactionsTransactionId(w http.ResponseWriter, r *http.Request) {
 	transactionId := r.Context().Value("transactionId").(string)
-	idx, err := strconv.Atoi(transactionId)
+	txn, err := t.transactions.Get(transactionId)
 	if err != nil {
-		w.Write([]byte(fmt.Sprintf(`{ "error": "%s" }`, err)))
-		w.WriteHeader(http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
 
-	if len(t.transactions) == 0 || idx < 0 || idx >= len(t.transactions) {
+	if txn == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	buf, err := json.Marshal(t.transactions[idx])
+	buf, err := json.Marshal(txn)
 	if err != nil {
-		w.Write([]byte(fmt.Sprintf(`{ "error": "%s" }`, err)))
-		w.WriteHeader(http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
 
@@ -91,7 +118,7 @@ func (t *transactionsImpl) GetTransactionsTransactionId(w http.ResponseWriter, r
 }
 
 func Handler() http.Handler {
-	var api transactionsImpl
+	api := transactionsImpl{transactions: store}
 
 	r := chi.NewMux()
 	r.Mount("/", ledgerserver.Handler(&api))

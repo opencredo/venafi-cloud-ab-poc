@@ -1,0 +1,18 @@
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: cockroachdb-ledger
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: cockroachdb-ledger
+  duration: 24h
+  renewBefore: 1h
+  issuerRef:
+    name: cloud-venafi-issuer
+    kind: ClusterIssuer
+  commonName: ledger
+  isCA: false
+  keyAlgorithm: rsa
+  usages:
+  - client auth

@@ -1,17 +1,15 @@
 apiVersion: v1
-data:
-  apikey: {{ .Values.venafiApiKey }}
 kind: Secret
 metadata:
-  creationTimestamp: null
   name: cloud-venafi-secret
-  namespace: cockroachdb
+  namespace: cert-manager
+data:
+  apikey: {{ .Values.venafiApiKey }}
 ---
 apiVersion: cert-manager.io/v1alpha2
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: cloud-venafi-issuer
-  namespace: cockroachdb
 spec:
   venafi:
     zone: {{ .Values.venafiPolicyZone }} # Set this to the Venafi policy zone you want to use
@@ -31,7 +29,7 @@ spec:
   renewBefore: 1h
   issuerRef:
     name: cloud-venafi-issuer
-    kind: Issuer
+    kind: ClusterIssuer
   commonName: node
   isCA: false
   keyAlgorithm: rsa
@@ -63,11 +61,10 @@ spec:
   renewBefore: 1h
   issuerRef:
     name: cloud-venafi-issuer
-    kind: Issuer
+    kind: ClusterIssuer
   commonName: root
   isCA: false
   keyAlgorithm: rsa
   usages:
   - server auth
   - client auth
-

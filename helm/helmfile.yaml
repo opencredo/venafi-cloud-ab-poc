@@ -11,6 +11,9 @@ releases:
 - name: linkerd
   version: "~2.8.1"
   namespace: linkerd
+  createNamespace: false
+  needs:
+   - core/common
   chart: linkerd/linkerd2
   values:
   - global:
@@ -30,12 +33,16 @@ releases:
   version: "v0.15.2"
   chart: jetstack/cert-manager
   namespace: cert-manager
+  needs:
+   - core/common
   values:
   - installCRDs: true
 - name: cockroachdb
   version: "4.1.0"
   chart: cockroachdb/cockroachdb
   namespace: cockroachdb
+  needs:
+   - core/common
   values:
   - statefulset:
       resources:
@@ -58,6 +65,11 @@ releases:
   labels:
     local: "true"
   namespace: core
+  createNamespace: true
+  hooks:
+  - events: ['postsync']
+    command: "kubectl"
+    args: ['patch', 'ns', 'core', '--patch', '{ "metadata": { "annotations": { "linkerd.io/inject": "enabled" } } }']
   chart: "./local/common"
   version: 0.0.30
   values:
@@ -68,6 +80,9 @@ releases:
   labels:
     local: "true"
   namespace: core
+  createNamespace: false
+  needs:
+   - core/common
   chart: "./local/ledger"
   version: 0.0.30
   values:
@@ -77,6 +92,9 @@ releases:
   labels:
     local: "true"
   namespace: core
+  createNamespace: false
+  needs:
+   - core/common
   chart: "./local/txnsim"
   version: 0.0.30
   values:
