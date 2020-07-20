@@ -6,6 +6,7 @@ metadata:
     app: {{ .Values.serviceName }}
 webhooks:
 - name: '{{ .Values.serviceName }}-svc.{{ .Release.Namespace }}.svc.cluster.local'
+  failurePolicy: Ignore
   clientConfig:
     service:
       name: '{{ .Values.serviceName }}-svc'
@@ -18,3 +19,6 @@ webhooks:
     apiGroups: [""]
     apiVersions: ["v1"]
     resources: ["secrets"]
+  namespaceSelector:
+    matchLabels:
+      secret-fixer: enabled

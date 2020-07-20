@@ -23,3 +23,15 @@ spec:
         - containerPort: 8080
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+        env:
+        - name: OCVAB_SECRETFIXER_CERTS
+          value: /webhook-certs
+        volumeMounts:
+        - name: webhook-certs
+          mountPath: /webhook-certs
+          readOnly: true
+      volumes:
+      - name: webhook-certs
+        secret:
+          secretName: '{{ .Values.serviceName }}-cert'
+        

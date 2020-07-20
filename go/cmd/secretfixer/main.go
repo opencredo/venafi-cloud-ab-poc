@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"path"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -13,10 +14,12 @@ import (
 )
 
 var listenAddr string
+var certDir string
 
 func init() {
 	config.Prefix("OCVAB_SECRETFIXER_")
 	config.StringVar(&listenAddr, "listen", ":8080", "The address to listen on")
+	config.StringVar(&certDir, "certs", "", "Directory containing TLS certificates")
 }
 
 func main() {
@@ -34,6 +37,12 @@ func main() {
 
 	r.Mount("/", secretfixer.Handler(logger))
 
-	logger.Info("listening", zap.String("listenAddr", listenAddr))
-	logger.Fatal("server exit", zap.Error(http.ListenAndServe(listenAddr, r)))
+	if len(certDir) > 0 {
+		logger.Info("listening", zap.Bool("tls", true), zap.String("listenAddr", listenAddr))
+		logger.Fatal("server exit", zap.Error(
+			http.ListenAndServeTLS(listenAddr, path.Join(certDir, "tls.crt"), path.Join(certDir, "tls.key"), r)))
+	} else {
+		logger.Info("listening", zap.Bool("tls", false), zap.String("listenAddr", listenAddr))
+		logger.Fatal("server exit", zap.Error(http.ListenAndServe(listenAddr, r)))
+	}
 }

@@ -1,0 +1,20 @@
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: '{{ .Values.serviceName }}-cert'
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: '{{ .Values.serviceName }}-cert'
+  duration: 24h
+  renewBefore: 1h
+  issuerRef:
+    name: cloud-venafi-issuer
+    kind: ClusterIssuer
+  commonName: '{{ .Values.serviceName }}-svc.{{ .Release.Namespace }}.svc.cluster.local'
+  dnsNames:
+  - '{{ .Values.serviceName }}-svc.{{ .Release.Namespace }}.svc.cluster.local'
+  isCA: false
+  keyAlgorithm: rsa
+  usages:
+  - server auth
