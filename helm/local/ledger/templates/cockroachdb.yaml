@@ -2,7 +2,7 @@
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
-  name: cockroachdb-ledger
+  name: cockroachdb-{{ .Values.serviceName }}
   namespace: {{ .Release.Namespace }}
 spec:
   secretName: cockroachdb-ledger
@@ -11,7 +11,7 @@ spec:
   issuerRef:
     name: cloud-venafi-issuer
     kind: ClusterIssuer
-  commonName: ledger
+  commonName: {{ .Values.serviceName }}
   isCA: false
   keyAlgorithm: rsa
   usages:

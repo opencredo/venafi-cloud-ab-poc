@@ -13,12 +13,10 @@ import (
 )
 
 var listenAddr string
-var pgConnection string
 
 func init() {
-	config.Prefix("OCVAB_LEDGER_")
+	config.Prefix("OCVAB_SECRETFIXER_")
 	config.StringVar(&listenAddr, "listen", ":8080", "The address to listen on")
-	config.StringVar(&pgConnection, "db", "", "Postgres connection string. If empty ledger will be in memory.")
 }
 
 func main() {
@@ -34,16 +32,8 @@ func main() {
 	r.Use(zaplog.ZapLog(logger))
 	r.Use(middleware.Recoverer)
 
-	if pgConnection != "" {
-		err := ledger.InitDB(logger, pgConnection)
-		if err != nil {
-			logger.Fatal("unable to initialise database", zap.Error(err), zap.String("pgConnection", pgConnection))
-		}
-	}
-
 	r.Mount("/", ledger.Handler())
 
 	logger.Info("listening", zap.String("listenAddr", listenAddr))
-
 	logger.Fatal("server exit", zap.Error(http.ListenAndServe(listenAddr, r)))
 }

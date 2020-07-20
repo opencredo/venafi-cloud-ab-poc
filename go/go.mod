@@ -10,4 +10,6 @@ require (
 	github.com/rakyll/statik v0.1.7
 	go.uber.org/zap v1.15.0
 	golang.org/x/tools v0.0.0-20200717024301-6ddee64345a6 // indirect
+	k8s.io/api v0.18.6
+	k8s.io/apimachinery v0.18.6
 )

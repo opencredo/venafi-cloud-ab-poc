@@ -11,11 +11,9 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/ledgerserver"
 	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/swaggerui"
-	"go.uber.org/zap"
 )
 
 var pgConnection string
-var logger *zap.Logger
 var store transactionStore = &memoryStore{}
 
 func RegisterStore(s transactionStore) {

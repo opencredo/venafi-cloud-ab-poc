@@ -1,6 +1,7 @@
 package zaplog
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,6 +13,15 @@ import (
 func ZapLog(logger *zap.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			var fields []zapcore.Field
+			for k, v := range r.Header {
+				for i := range v {
+					fields = append(fields, zap.String(fmt.Sprintf("%s[%d]", k, i), v[i]))
+				}
+			}
+			logger.Info("header", fields...)
+
 			logger.Info(
 				"http request",
 				zap.String("Method", r.Method),
@@ -30,7 +40,7 @@ func ZapLog(logger *zap.Logger) func(http.Handler) http.Handler {
 
 			dur := time.Now().Sub(then)
 			status := ww.Status()
-			var fields []zapcore.Field = []zapcore.Field{
+			var responseFields []zapcore.Field = []zapcore.Field{
 				zap.Int("Status", status),
 				zap.Int("Bytes", ww.BytesWritten()),
 				zap.Duration("Duration", dur),
@@ -38,11 +48,11 @@ func ZapLog(logger *zap.Logger) func(http.Handler) http.Handler {
 			if status < 200 || (status > 399 && status < 400) || status > 499 {
 				logger.Error(
 					"http response",
-					fields...)
+					responseFields...)
 			} else {
 				logger.Info(
 					"http response",
-					fields...)
+					responseFields...)
 			}
 		})
 	}
