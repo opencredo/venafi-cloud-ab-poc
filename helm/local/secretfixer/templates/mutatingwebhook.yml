@@ -3,12 +3,12 @@ kind: MutatingWebhookConfiguration
 metadata:
   name: {{ .Values.serviceName }}
   labels:
-    app: {{ .Value.serviceName }}
+    app: {{ .Values.serviceName }}
 webhooks:
-- name: '{{ .Value.serviceName }}-svc'
+- name: '{{ .Values.serviceName }}-svc'
   clientConfig:
     service:
-      name: '{{ .Value.serviceName }}-svc'
+      name: '{{ .Values.serviceName }}-svc'
       namespace: core
       path: "/"
     caBundle: |
