@@ -72,7 +72,7 @@ releases:
     args: ['patch', 'ns', 'core', '--patch', '{ "metadata": { "annotations": { "linkerd.io/inject":
         "enabled" } } }']
   chart: "./local/common"
-  version: 0.0.36
+  version: 0.0.37
   values:
   - venafiApiKey: '{{ requiredEnv "VENAFI_API_KEY" }}'
   - users: '{{ requiredEnv "USERS" }}'
@@ -85,7 +85,7 @@ releases:
   needs:
   - core/common
   chart: "./local/ledger"
-  version: 0.0.36
+  version: 0.0.37
   values:
   - global:
       domainName: gloomy-williams.wapbot.co.uk
@@ -97,7 +97,7 @@ releases:
   needs:
   - core/common
   chart: "./local/txnsim"
-  version: 0.0.36
+  version: 0.0.37
   values:
   - ledgerServiceAddress: http://ledger-svc
 - name: secretfixer
@@ -108,7 +108,7 @@ releases:
   needs:
   - core/common
   chart: "./local/secretfixer"
-  version: 0.0.36
+  version: 0.0.37
   values:
   - caBundle: |
       {{- requiredEnv "LINKERD2_GLOBAL_IDENTITYTRUSTANCHORSPEM" | nindent 6 }}
