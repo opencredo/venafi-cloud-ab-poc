@@ -167,7 +167,7 @@ jobs:
       uses: azure/setup-helm@v1
 
     - name: Install helm diff
-      run: helm plugin install https://github.com/databus23/helm-diff --version master
+      run: helm plugin install https://github.com/databus23/helm-diff --version e186caafe744378a6059f9b70084b49daf196ede 
 
     - name: Setup gcloud
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
