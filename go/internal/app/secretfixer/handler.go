@@ -1,4 +1,4 @@
-package ledger
+package secretfixer
 
 import (
 	"encoding/json"

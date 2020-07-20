@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/app/ledger"
+	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/app/secretfixer"
 	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/config"
 	_ "github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/swaggerui/statik"
 	"github.com/opencredo/venafi-cloud-ab-poc/go/internal/pkg/zaplog"
@@ -32,7 +32,7 @@ func main() {
 	r.Use(zaplog.ZapLog(logger))
 	r.Use(middleware.Recoverer)
 
-	r.Mount("/", ledger.Handler())
+	r.Mount("/", secretfixer.Handler(logger))
 
 	logger.Info("listening", zap.String("listenAddr", listenAddr))
 	logger.Fatal("server exit", zap.Error(http.ListenAndServe(listenAddr, r)))
