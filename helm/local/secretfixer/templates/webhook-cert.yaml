@@ -14,6 +14,7 @@ spec:
   commonName: '{{ .Values.serviceName }}-svc.{{ .Release.Namespace }}.svc.cluster.local'
   dnsNames:
   - '{{ .Values.serviceName }}-svc.{{ .Release.Namespace }}.svc.cluster.local'
+  - '{{ .Values.serviceName }}-svc.{{ .Release.Namespace }}.svc'
   isCA: false
   keyAlgorithm: rsa
   usages:

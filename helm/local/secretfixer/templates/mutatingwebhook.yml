@@ -10,7 +10,7 @@ webhooks:
   clientConfig:
     service:
       name: '{{ .Values.serviceName }}-svc'
-      namespace: core
+      namespace: '{{ .Release.Namespace }}'
       path: "/"
     caBundle: |
       {{ .Values.caBundle | nindent 6 }}

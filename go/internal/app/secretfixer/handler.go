@@ -73,7 +73,7 @@ func Handler(l *zap.Logger) http.Handler {
 	logger = l
 
 	r := chi.NewMux()
-	r.Get("/", mutate)
+	r.Post("/", mutate)
 
 	return r
 }
