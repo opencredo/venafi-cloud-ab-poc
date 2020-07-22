@@ -93,8 +93,7 @@ func (t *transactionsImpl) PostTransactions(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (t *transactionsImpl) GetTransactionsTransactionId(w http.ResponseWriter, r *http.Request) {
-	transactionId := r.Context().Value("transactionId").(string)
+func (t *transactionsImpl) GetTransactionsTransactionId(w http.ResponseWriter, r *http.Request, transactionId string) {
 	txn, err := t.transactions.Get(transactionId)
 	if err != nil {
 		writeError(w, err)

@@ -61,9 +61,10 @@ jobs:
     - name: Build Ledger Image
       uses: docker/build-push-action@v1
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: yoink00/ledger
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        repository: opencredo/venafi-cloud-ab-poc/ledger
+        registry: docker.pkg.github.com
         dockerfile: docker/ledger/Dockerfile
         path: go
         build_args: GIT_COMMIT_ID=${{ github.sha }}
@@ -75,9 +76,10 @@ jobs:
     - name: Build Txnsim Image
       uses: docker/build-push-action@v1
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: yoink00/txnsim
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        repository: opencredo/venafi-cloud-ab-poc/txnsim
+        registry: docker.pkg.github.com
         dockerfile: docker/txnsim/Dockerfile
         path: go
         build_args: GIT_COMMIT_ID=${{ github.sha }}
@@ -89,9 +91,10 @@ jobs:
     - name: Build SecretFixer Image
       uses: docker/build-push-action@v1
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: yoink00/secretfixer
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        repository: opencredo/venafi-cloud-ab-poc/secretfixer
+        registry: docker.pkg.github.com
         dockerfile: docker/secretfixer/Dockerfile
         path: go
         build_args: GIT_COMMIT_ID=${{ github.sha }}

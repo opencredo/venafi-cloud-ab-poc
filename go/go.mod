@@ -3,7 +3,7 @@ module github.com/opencredo/venafi-cloud-ab-poc/go
 go 1.14
 
 require (
-	github.com/deepmap/oapi-codegen v1.3.9
+	github.com/deepmap/oapi-codegen v1.3.11
 	github.com/getkin/kin-openapi v0.18.0
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/jackc/pgx/v4 v4.7.2
