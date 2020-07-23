@@ -3,7 +3,9 @@ package secretfixer
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
@@ -41,11 +43,13 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var admissionReview *v1beta1.AdmissionReview
-	d := json.NewDecoder(r.Body)
+	b := &strings.Builder{}
+	tee := io.TeeReader(r.Body, b)
+	d := json.NewDecoder(tee)
 	defer r.Body.Close()
 	err := d.Decode(admissionReview)
 	if err != nil {
-		logger.Error("unable to decode body", zap.Error(err))
+		logger.Error("unable to decode body", zap.Error(err), zap.String("body", b.String()))
 		writeError(w, err.Error())
 		return
 	}
