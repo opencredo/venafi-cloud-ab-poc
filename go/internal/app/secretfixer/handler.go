@@ -1,9 +1,12 @@
 package secretfixer
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -80,20 +83,46 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 	var patchBuf []byte
 	if secret.Type == v1.SecretTypeTLS {
 		if _, exists := secret.Data["ca.crt"]; !exists {
-			var patches []patch
-
-			p := patch{}
-			p.Op = "add"
-			p.Path = "/data/ca.crt"
-			p.Value = "DEADBEEFBADCAFE"
-
-			patches = append(patches, p)
-
-			patchBuf, err = json.Marshal(patches)
-			if err != nil {
-				logger.Error("unable to marshal patch", zap.Error(err), zap.ByteString("patch", patchBuf))
-				writeAdmissionReviewError(w, &admissionReview, "unable to marshal patch")
+			if _, exists := secret.Data["tls.crt"]; !exists {
+				logger.Error("tls.crt is missing")
+				writeAdmissionReviewError(w, &admissionReview, "tls.crt is missing")
 				return
+			}
+
+			crt := secret.Data["tls.crt"]
+			decBuf := bytes.NewBuffer(crt)
+			decReader := base64.NewDecoder(base64.StdEncoding, decBuf)
+			pemBuf, err := ioutil.ReadAll(decReader)
+			if err != nil {
+				logger.Error("unable to base64 decode tls.crt", zap.ByteString("tls.crt", crt))
+				writeAdmissionReviewError(w, &admissionReview, "unable to decode tls.crt")
+				return
+			}
+			certs, err := caFromChain(pemBuf)
+			if err != nil {
+				logger.Error("unable to get CA certificates from tls.crt", zap.ByteString("tls.crt", pemBuf))
+				writeAdmissionReviewError(w, &admissionReview, "unable to parse tls.crt certificates")
+				return
+			}
+
+			if len(certs) > 0 {
+				var patches []patch
+
+				p := patch{}
+				p.Op = "add"
+				p.Path = "/data/ca.crt"
+				p.Value = base64.StdEncoding.EncodeToString(certs)
+
+				patches = append(patches, p)
+
+				patchBuf, err = json.Marshal(patches)
+				if err != nil {
+					logger.Error("unable to marshal patch", zap.Error(err), zap.ByteString("patch", patchBuf))
+					writeAdmissionReviewError(w, &admissionReview, "unable to marshal patch")
+					return
+				}
+			} else {
+				logger.Info("only 1 certificate in tls.crt so unable to populate ca.crt")
 			}
 		}
 	}
