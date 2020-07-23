@@ -82,7 +82,7 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 
 	var patchBuf []byte
 	if secret.Type == v1.SecretTypeTLS {
-		if _, exists := secret.Data["ca.crt"]; !exists {
+		if dataCrt, exists := secret.Data["ca.crt"]; !exists || len(dataCrt) == 0 {
 			if _, exists := secret.Data["tls.crt"]; !exists {
 				logger.Error("tls.crt is missing")
 				writeAdmissionReviewError(w, &admissionReview, "tls.crt is missing")
@@ -116,6 +116,8 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 			} else {
 				logger.Info("only 1 certificate in tls.crt so unable to populate ca.crt")
 			}
+		} else {
+			logger.Info("already has ca.crt populated")
 		}
 	} else {
 		logger.Info("not a tls secret", zap.String("type", string(secret.Type)))
@@ -127,6 +129,8 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(patchBuf) > 0 {
 		admissionReview.Response.Patch = patchBuf
+	} else {
+		logger.Info("not patching secret")
 	}
 
 	buf, err := json.Marshal(admissionReview)
