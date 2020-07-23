@@ -26,3 +26,7 @@ spec:
         - containerPort: 8080
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+      {{ if .Values.pullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.pullSecret }}
+      {{ end -}}

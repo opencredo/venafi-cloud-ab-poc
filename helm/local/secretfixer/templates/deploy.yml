@@ -30,8 +30,11 @@ spec:
         - name: webhook-certs
           mountPath: /webhook-certs
           readOnly: true
+      {{ if .Values.pullSecret -}}
+      imagePullSecrets:
+      - name: {{ .Values.pullSecret }}
+      {{ end -}}
       volumes:
       - name: webhook-certs
         secret:
           secretName: '{{ .Values.serviceName }}-cert'
-        

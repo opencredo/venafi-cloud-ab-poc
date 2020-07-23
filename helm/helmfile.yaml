@@ -89,6 +89,7 @@ releases:
   values:
   - global:
       domainName: gloomy-williams.wapbot.co.uk
+  - pullSecret: regcred
 - name: txnsim
   labels:
     local: "true"
@@ -100,6 +101,7 @@ releases:
   version: 0.0.39
   values:
   - ledgerServiceAddress: http://ledger-svc
+  - pullSecret: regcred
 - name: secretfixer
   labels:
     local: "true"
@@ -163,3 +165,4 @@ releases:
       ODdvMENEa3JCVWhkNndLMDdzQjl1NGZBYUR6RUdkRFVTamNCR3V6WlUyNEdCS0xFMURjCkpIWWpS
       QmtNQ0lKYVIzOUhlL2p0anJhTHA2dzRlYStTVng0NVNvVFZtY2E5ZU51bSt0WUs3Tkp5czUwWStD
       bmsKUlE9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0t
+  - pullSecret: regcred

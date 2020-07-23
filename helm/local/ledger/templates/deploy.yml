@@ -30,6 +30,10 @@ spec:
         env:
         - name: OCVAB_LEDGER_DB
           value: "user={{ .Values.serviceName }} host=cockroachdb-public.cockroachdb.svc.cluster.local port=26257 dbname=transactions sslmode=verify-full sslcert=/cockroachdb-certs/tls.crt sslkey=/cockroachdb-certs/tls.key sslrootcert=/cockroachdb-certs/ca.crt"
+      {{ if .Values.pullSecret -}}
+      imagePullSecrets:
+      - name: {{ .Values.pullSecret }}
+      {{ end -}}
       volumes:
       - name: cockroachdb-secret
         secret:
