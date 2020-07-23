@@ -89,9 +89,9 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 
 			patches = append(patches, p)
 
-			patchBuf, err = json.Marshal(p)
+			patchBuf, err = json.Marshal(patches)
 			if err != nil {
-				logger.Error("unable to marshal patch", zap.Error(err), zap.String("patch", fmt.Sprint(p)))
+				logger.Error("unable to marshal patch", zap.Error(err), zap.ByteString("patch", patchBuf))
 				writeAdmissionReviewError(w, &admissionReview, "unable to marshal patch")
 				return
 			}
