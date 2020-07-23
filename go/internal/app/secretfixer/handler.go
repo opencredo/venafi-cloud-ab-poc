@@ -106,12 +106,13 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 		admissionReview.Response.Patch = patchBuf
 	}
 
-	e := json.NewEncoder(w)
-	err = e.Encode(admissionReview)
+	buf, err := json.Marshal(admissionReview)
 	if err != nil {
 		logger.Error("unable to encode response", zap.Error(err))
 		writeError(w, fmt.Sprintf("unable to encode response: %s", err))
 	}
+	logger.Info("admission response", zap.ByteString("Response", buf))
+	w.Write(buf)
 }
 
 func Handler(l *zap.Logger) http.Handler {
