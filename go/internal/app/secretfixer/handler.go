@@ -80,10 +80,14 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 	var patchBuf []byte
 	if secret.Type == v1.SecretTypeTLS {
 		if _, exists := secret.Data["ca.crt"]; !exists {
+			var patches []patch
+
 			p := patch{}
 			p.Op = "add"
 			p.Path = "data/ca.crt"
 			p.Value = "DEADBEEFBADCAFE"
+
+			patches = append(patches, p)
 
 			patchBuf, err = json.Marshal(p)
 			if err != nil {
