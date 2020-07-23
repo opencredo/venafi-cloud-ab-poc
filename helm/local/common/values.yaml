@@ -4,4 +4,4 @@ venafiPolicyZone: ""
 global:
   domainName: gloomy-williams.wapbot.co.uk
 image:
-  tag: 0.0.44
+  tag: 0.0.45
