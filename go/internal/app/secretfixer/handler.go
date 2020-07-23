@@ -84,7 +84,7 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 
 			p := patch{}
 			p.Op = "add"
-			p.Path = "data/ca.crt"
+			p.Path = "/ca.crt"
 			p.Value = "DEADBEEFBADCAFE"
 
 			patches = append(patches, p)
