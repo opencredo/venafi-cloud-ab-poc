@@ -54,6 +54,8 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.Info("decoded body", zap.Error(err), zap.String("body", b.String()))
+
 	if admissionReview.Request.Kind.Kind != "Secret" {
 		logger.Error("wrong kind", zap.String("kind", admissionReview.Request.Kind.Kind))
 		writeAdmissionReviewError(w, &admissionReview, fmt.Sprintf("wrong kind: %s", admissionReview.Request.Kind.Kind))
