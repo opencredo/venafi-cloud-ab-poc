@@ -90,17 +90,9 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 			}
 
 			crt := secret.Data["tls.crt"]
-			decBuf := bytes.NewBuffer(crt)
-			decReader := base64.NewDecoder(base64.StdEncoding, decBuf)
-			pemBuf, err := ioutil.ReadAll(decReader)
+			certs, err := caFromChain(crt)
 			if err != nil {
-				logger.Error("unable to base64 decode tls.crt", zap.ByteString("tls.crt", crt))
-				writeAdmissionReviewError(w, &admissionReview, "unable to decode tls.crt")
-				return
-			}
-			certs, err := caFromChain(pemBuf)
-			if err != nil {
-				logger.Error("unable to get CA certificates from tls.crt", zap.ByteString("tls.crt", pemBuf))
+				logger.Error("unable to get CA certificates from tls.crt", zap.ByteString("tls.crt", crt))
 				writeAdmissionReviewError(w, &admissionReview, "unable to parse tls.crt certificates")
 				return
 			}
