@@ -70,6 +70,8 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.Info("processing secret")
+
 	var secret v1.Secret
 	err = json.Unmarshal(admissionReview.Request.Object.Raw, &secret)
 	if err != nil {
@@ -115,6 +117,8 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 				logger.Info("only 1 certificate in tls.crt so unable to populate ca.crt")
 			}
 		}
+	} else {
+		logger.Info("not a tls secret", zap.String("type", string(secret.Type)))
 	}
 
 	admissionReview.Response = &v1beta1.AdmissionResponse{
