@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
 	v1beta1 "k8s.io/api/admission/v1beta1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -32,6 +33,12 @@ func writeAdmissionReviewError(w http.ResponseWriter, ar *v1beta1.AdmissionRevie
 		logger.Error("unable to encode error response", zap.Error(err))
 		http.Error(w, "unable to encode error response", http.StatusInternalServerError)
 	}
+}
+
+type patch struct {
+	Op    string `json:"op"`
+	Path  string `json:"path"`
+	Value string `json:"value"`
 }
 
 func mutate(w http.ResponseWriter, r *http.Request) {
@@ -62,9 +69,37 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var secret v1.Secret
+	err = json.Unmarshal(admissionReview.Request.Object.Raw, &secret)
+	if err != nil {
+		logger.Error("unable to decode object", zap.Error(err), zap.ByteString("objectRaw", admissionReview.Request.Object.Raw))
+		writeAdmissionReviewError(w, &admissionReview, "unable to decode object")
+		return
+	}
+
+	var patchBuf []byte
+	if secret.Type == v1.SecretTypeTLS {
+		if _, exists := secret.Data["ca.crt"]; !exists {
+			p := patch{}
+			p.Op = "add"
+			p.Path = "data/ca.crt"
+			p.Value = "DEADBEEFBADCAFE"
+
+			patchBuf, err = json.Marshal(p)
+			if err != nil {
+				logger.Error("unable to marshal patch", zap.Error(err), zap.String("patch", fmt.Sprint(p)))
+				writeAdmissionReviewError(w, &admissionReview, "unable to marshal patch")
+				return
+			}
+		}
+	}
+
 	admissionReview.Response = &v1beta1.AdmissionResponse{
 		UID:     admissionReview.Request.UID,
 		Allowed: true,
+	}
+	if len(patchBuf) > 0 {
+		admissionReview.Response.Patch = patchBuf
 	}
 
 	e := json.NewEncoder(w)
