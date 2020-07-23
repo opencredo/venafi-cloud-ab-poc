@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
-	v1 "k8s.io/api/admission/v1"
+	v1beta1 "k8s.io/api/admission/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -18,8 +18,8 @@ func writeError(w http.ResponseWriter, errStr string) {
 	w.Write([]byte(fmt.Sprintf(`{ "error": "%s" }`, errStr)))
 }
 
-func writeAdmissionReviewError(w http.ResponseWriter, ar *v1.AdmissionReview, errStr string) {
-	ar.Response = &v1.AdmissionResponse{
+func writeAdmissionReviewError(w http.ResponseWriter, ar *v1beta1.AdmissionReview, errStr string) {
+	ar.Response = &v1beta1.AdmissionResponse{
 		Result: &metav1.Status{
 			Message: errStr,
 		},
@@ -40,7 +40,7 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var admissionReview *v1.AdmissionReview
+	var admissionReview *v1beta1.AdmissionReview
 	d := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	err := d.Decode(admissionReview)
@@ -56,7 +56,7 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	admissionReview.Response = &v1.AdmissionResponse{
+	admissionReview.Response = &v1beta1.AdmissionResponse{
 		UID:     admissionReview.Request.UID,
 		Allowed: true,
 	}
