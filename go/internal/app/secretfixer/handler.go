@@ -42,12 +42,12 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var admissionReview *v1beta1.AdmissionReview
+	var admissionReview v1beta1.AdmissionReview
 	b := &strings.Builder{}
 	tee := io.TeeReader(r.Body, b)
 	d := json.NewDecoder(tee)
 	defer r.Body.Close()
-	err := d.Decode(admissionReview)
+	err := d.Decode(&admissionReview)
 	if err != nil {
 		logger.Error("unable to decode body", zap.Error(err), zap.String("body", b.String()))
 		writeError(w, err.Error())
@@ -56,7 +56,7 @@ func mutate(w http.ResponseWriter, r *http.Request) {
 
 	if admissionReview.Request.Kind.Kind != "Secret" {
 		logger.Error("wrong kind", zap.String("kind", admissionReview.Request.Kind.Kind))
-		writeAdmissionReviewError(w, admissionReview, fmt.Sprintf("wrong kind: %s", admissionReview.Request.Kind.Kind))
+		writeAdmissionReviewError(w, &admissionReview, fmt.Sprintf("wrong kind: %s", admissionReview.Request.Kind.Kind))
 		return
 	}
 
